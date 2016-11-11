@@ -1,0 +1,21 @@
+{
+  "name": "t3ko/paczkomaty-api-php-sdk",
+  "description": "PHP SDK for Inpost Paczkomaty API",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Tomasz Konarski",
+      "email": "tomasz@konar.ski"
+    }
+  ],
+  "require": {
+    "guzzlehttp/guzzle": "~6.0",
+    "sabre/xml": "^1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "T3ko\\Paczkomaty\\": "src/"
+    }
+  }
+}
