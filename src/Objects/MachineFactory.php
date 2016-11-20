@@ -2,12 +2,10 @@
 
 namespace T3ko\Paczkomaty\Objects;
 
-use Sabre\Xml\Reader;
 use Sabre\Xml\Service;
 
-class Factory
+class MachineFactory
 {
-    private $xmlParser;
 
     public function __construct()
     {
