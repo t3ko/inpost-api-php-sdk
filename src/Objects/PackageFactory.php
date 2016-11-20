@@ -1,6 +1,6 @@
 <?php
 
-namespace T3ko\Paczkomaty\Objects;
+namespace T3ko\Inpost\Objects;
 
 class PackageFactory
 {

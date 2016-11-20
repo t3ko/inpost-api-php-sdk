@@ -1,8 +1,8 @@
 {
-  "name": "t3ko/paczkomaty-api-php-sdk",
-  "description": "PHP SDK for Inpost Paczkomaty API",
+  "name": "t3ko/inpost-api-php-sdk",
+  "description": "PHP SDK for Inpost API",
   "minimum-stability": "stable",
-  "license": "proprietary",
+  "license": "MIT",
   "authors": [
     {
       "name": "Tomasz Konarski",
@@ -15,7 +15,7 @@
   },
   "autoload": {
     "psr-4": {
-      "T3ko\\Paczkomaty\\": "src/"
+      "T3ko\\Inpost\\": "src/"
     }
   }
 }

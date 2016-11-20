@@ -1,6 +1,6 @@
 <?php
 
-namespace T3ko\Paczkomaty\Api\SerializationAdapters;
+namespace T3ko\Inpost\Api\SerializationAdapters;
 
 use Sabre\Xml\XmlSerializable;
 
@@ -10,9 +10,9 @@ class Package implements XmlSerializable
 
     /**
      * Package constructor.
-     * @param \T3ko\Paczkomaty\Objects\Package $package
+     * @param \T3ko\Inpost\Objects\Package $package
      */
-    public function __construct(\T3ko\Paczkomaty\Objects\Package $package)
+    public function __construct(\T3ko\Inpost\Objects\Package $package)
     {
         $this->package = $package;
     }

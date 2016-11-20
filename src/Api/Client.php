@@ -1,9 +1,9 @@
 <?php
 
-namespace T3ko\Paczkomaty\Api;
+namespace T3ko\Inpost\Api;
 
-use T3ko\Paczkomaty\Objects\MachineFactory;
-use T3ko\Paczkomaty\Objects\Package;
+use T3ko\Inpost\Objects\MachineFactory;
+use T3ko\Inpost\Objects\Package;
 
 class Client
 {
@@ -26,7 +26,6 @@ class Client
     {
         $this->apiLogin = $apiLogin;
         $this->apiPassword = $apiPassword;
-
         $this->apiClient = new \GuzzleHttp\Client([
             'base_uri' => $apiEndpoint,
         ]);

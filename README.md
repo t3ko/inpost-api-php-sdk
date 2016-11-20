@@ -1,10 +1,10 @@
-# paczkomaty-api-php-sdk
+# inpost-api-php-sdk
 
-Biblioteka PHP do obsługi API usługi Inpost Paczkomaty (https://b2b.paczkomaty.pl/pl/e-commerce/jak-sie-zintegrowac)
+Biblioteka PHP do obsługi API usług Inpost (https://b2b.inpost.pl/pl/e-commerce/jak-sie-zintegrowac)
 
 Aktualnie obsługiwana wersja API to **2.1.11**
 ## Stabilność
-[![GitHub version](https://badge.fury.io/gh/t3ko%2Fpaczkomaty-api-php-sdk.svg)](https://badge.fury.io/gh/t3ko%2Fpaczkomaty-api-php-sdk)
+[![GitHub version](https://badge.fury.io/gh/t3ko%2Finpost-api-php-sdk.svg)](https://badge.fury.io/gh/t3ko%2Finpost-api-php-sdk)
 
 **Aktualnie dostępna tylko wersja wczesno-deweloperska. Brak wersji stabilnej/produkcyjnej.**
 
@@ -14,19 +14,19 @@ Najprostszy sposób to instalacja za pomocą Composer-a (http://getcomposer.org)
 Poprzez plik `composer.json`:
 ```
 "repositories": {
-    "t3ko-paczkomaty-api-php-sdk" : {
+    "t3ko-inpost-api-php-sdk" : {
         "type": "vcs",
-        "url": "https://github.com/t3ko/paczkomaty-api-php-sdk.git"
+        "url": "https://github.com/t3ko/inpost-api-php-sdk.git"
     }
 },
 "require": {
-    "t3ko/paczkomaty-api-php-sdk": "dev-master"
+    "t3ko/inpost-api-php-sdk": "dev-master"
 },
 ```
 lub z linii poleceń:
 ```
-composer config repositories.t3ko-paczkomaty-api-php-sdk vcs https://github.com/t3ko/paczkomaty-api-php-sdk.git
-composer require t3ko/paczkomaty-api-php-sdk
+composer config repositories.t3ko-inpost-api-php-sdk vcs https://github.com/t3ko/inpost-api-php-sdk.git
+composer require t3ko/inpost-api-php-sdk
 ```
 
 ## Użycie
@@ -37,19 +37,19 @@ Najprostszy możliwy przykład:
 
 require_once __DIR__.'/vendor/autoload.php';
 
-$api = new T3ko\Paczkomaty\Api\Client(
+$api = new T3ko\Inpost\Api\Client(
     'test@testowy.pl',
     'WqJevQy*X7',
-    \T3ko\Paczkomaty\Api\Client::SANDBOX_API_ENDPOINT);
+    \T3ko\Inpost\Api\Client::SANDBOX_API_ENDPOINT);
 
 $machinesList = $api->getMachinesList();
 
 ```
 
 ## Dokumentacja
-Dokumentacja funkcjonalna API Inpost Paczkomaty dostępna poniżej:
+Dokumentacja funkcjonalna API Inpost dostępna poniżej:
 
-https://b2b.paczkomaty.pl/pl/strefa-kilenta/informacje-dla-klientow/dokumentacja-api-paczkomatow-inpost
+https://b2b.inpost.pl/pl/strefa-kilenta/informacje-dla-klientow/dokumentacja-api-paczkomatow-inpost
 
 ## Licencja
 

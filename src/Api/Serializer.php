@@ -1,11 +1,11 @@
 <?php
 
-namespace T3ko\Paczkomaty\Api;
+namespace T3ko\Inpost\Api;
 
 use Sabre\Xml\ParseException;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Service;
-use T3ko\Paczkomaty\Api\SerializationAdapters\Package as PackageAdapter;
+use T3ko\Inpost\Api\SerializationAdapters\Package as PackageAdapter;
 
 class Serializer
 {
