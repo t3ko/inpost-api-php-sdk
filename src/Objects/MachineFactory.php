@@ -2,6 +2,7 @@
 
 namespace T3ko\Paczkomaty\Objects;
 
+use Sabre\Xml\Reader;
 use Sabre\Xml\Service;
 
 class MachineFactory
