@@ -2,6 +2,8 @@
 
 namespace T3ko\Paczkomaty\Api;
 
+use Sabre\Xml\ParseException;
+use Sabre\Xml\Reader;
 use Sabre\Xml\Service;
 use T3ko\Paczkomaty\Api\SerializationAdapters\Package as PackageAdapter;
 
@@ -14,6 +16,23 @@ class Serializer
         $this->xmlService = new Service();
     }
 
+    public function deserializeErrors($xml)
+    {
+        try {
+            $response = $this->xmlService->parse($xml);
+            $possibleError = array_shift($response);
+            if ($possibleError['name'] == '{}error') {
+                return [
+                    'code' => $possibleError['attributes']['key'],
+                    'description' => $possibleError['value'],
+                ];
+            }
+        } catch (ParseException $e) {
+            return false;
+        }
+        return false;
+    }
+
     public function serializeCreateDeliveryPacksRequest($autoLabels, $selfSend, array $packages)
     {
         $request = [
@@ -24,10 +43,36 @@ class Serializer
             foreach ($packages as $package) {
                 $request[] = [
                     'name' => 'pack',
-                    'value' => new PackageAdapter($package)
+                    'value' => new PackageAdapter($package),
                 ];
             }
         }
+
         return $this->xmlService->write('paczkomaty', $request);
+    }
+
+    public function deserializeCreateDeliveryPacksResponse($xml)
+    {
+        $this->xmlService->elementMap = [
+            '{}pack' => function (Reader $reader) {
+                return \Sabre\Xml\Deserializer\keyValue($reader, '');
+            },
+            '{}paczkomaty' => function (Reader $reader) {
+                return \Sabre\Xml\Deserializer\repeatingElements($reader, '{}pack');
+            },
+        ];
+        $response = $this->xmlService->parse($xml);
+        $this->xmlService->elementMap = [];
+        $packageCodes = [];
+        if (!empty($response)) {
+            foreach ($response as $pack) {
+                $packageCodes[$pack['id']] = [
+                    'packcode' => $pack['packcode'],
+                    'calculatedcharge' => $pack['calculatedcharge'],
+                    ];
+            }
+        }
+
+        return $packageCodes;
     }
 }

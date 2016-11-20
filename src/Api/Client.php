@@ -10,6 +10,12 @@ class Client
     const PRODUCTION_API_ENDPOINT = 'https://api.paczkomaty.pl';
     const SANDBOX_API_ENDPOINT = 'https://sandbox-api.paczkomaty.pl';
 
+    const LABEL_SIZE_A4 = 'A4';
+    const LABEL_SIZE_A6 = 'A6P';
+    const LABEL_FILE_FORMAT_PDF = 'Pdf';
+    const LABEL_FILE_FORMAT_EPL2 = 'Epl2';
+
+
     private $apiLogin;
     private $apiPassword;
     private $apiClient;
@@ -27,6 +33,14 @@ class Client
 
         $this->machineFactory = new MachineFactory();
         $this->serializer = new Serializer();
+    }
+
+    private function validateResponse($xml)
+    {
+        if (false !== $result = $this->serializer->deserializeErrors($xml)) {
+            throw new \Exception(sprintf("%s: %s", $result['code'], $result['description']));
+        }
+        return true;
     }
 
     private function callEndpoint($path, $method, $body = [])
@@ -67,14 +81,17 @@ class Client
                 'limit' => $limit,
             ]);
         $responseXml = $this->getFromEndpoint($path);
-        die($responseXml);
 
         return $this->machineFactory->createMachinesList($responseXml);
     }
 
     public function registerPackage(Package $package)
     {
-        return $this->registerPackages([$package]);
+        $response = $this->registerPackages([$package]);
+        if (is_array($response)) {
+            return array_shift($response);
+        }
+        return $response;
     }
 
     public function registerPackages(array $packages)
@@ -91,6 +108,49 @@ class Client
             'content' => $requestBody,
         ];
 
-        return $responseXml = $this->postOnEndpoint($path, $body);
+        $responseXml = $this->postOnEndpoint($path, $body)->getContents();
+        if ($this->validateResponse($responseXml)) {
+            return $this->serializer->deserializeCreateDeliveryPacksResponse($responseXml);
+        }
+        return false;
+    }
+
+    public function payForPack($packageNumber)
+    {
+        $path = '?'.http_build_query([
+                'do' => 'payforpack',
+            ]);
+
+        $body = [
+            'email' => $this->apiLogin,
+            'password' => $this->apiPassword,
+            'packcode' => $packageNumber,
+        ];
+
+        $response = $this->postOnEndpoint($path, $body)->getContents();
+        if ($this->validateResponse($response)) {
+            return (bool)($response == '1');
+        }
+        return false;
+    }
+
+    public function getSticker($packageNumber, $size = null, $fileFormat = null)
+    {
+        $path = '?'.http_build_query([
+                'do' => 'getsticker',
+            ]);
+
+        $body = [
+            'email' => $this->apiLogin,
+            'password' => $this->apiPassword,
+            'packcode' => $packageNumber,
+            'labelType' => $size ? $size : self::LABEL_SIZE_A4,
+            'labelFormat' => $fileFormat ? $fileFormat : self::LABEL_FILE_FORMAT_PDF
+        ];
+
+        $response = $this->postOnEndpoint($path, $body)->getContents();
+        if ($this->validateResponse($response)) {
+            return $response;
+        }
     }
 }
