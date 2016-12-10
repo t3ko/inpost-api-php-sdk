@@ -18,9 +18,11 @@ class PackageBuilder
     /**
      * PackageBuilder constructor.
      *
-     * @param $addresseeEmail
-     * @param $addresseePhoneNumber
-     * @param $senderEmail
+     * @param string $senderEmail          Sender's email address
+     * @param string $packageType          Inpost package type ('A', 'B' or 'C')
+     * @param string $addresseeEmail       Addressee's email address
+     * @param string $addresseePhoneNumber Addressee's phone number
+     * @param string $addresseeMachineName Target package machine name
      */
     public function __construct($senderEmail, $packageType, $addresseeEmail, $addresseePhoneNumber, $addresseeMachineName)
     {

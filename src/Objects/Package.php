@@ -4,8 +4,17 @@ namespace T3ko\Inpost\Objects;
 
 class Package
 {
+    /**
+     *  Inpost package type 'A'
+     */
     const TYPE_A = 'A';
+    /**
+     *  Inpost package type 'B'
+     */
     const TYPE_B = 'B';
+    /**
+     *  Inpost package type 'C'
+     */
     const TYPE_C = 'C';
 
     private $selfId;
@@ -21,6 +30,7 @@ class Package
 
     /**
      * Package constructor.
+     *
      * @param PackageBuilder
      */
     public function __construct(PackageBuilder $builder)
@@ -38,6 +48,7 @@ class Package
     }
 
     /**
+     * Returns custom internal package ID
      * @return mixed
      */
     public function getSelfId()
@@ -46,6 +57,7 @@ class Package
     }
 
     /**
+     * Returns addressee's email address
      * @return mixed
      */
     public function getAddresseeEmail()
@@ -54,6 +66,7 @@ class Package
     }
 
     /**
+     * Returns addressee's phone number
      * @return mixed
      */
     public function getAddresseePhoneNumber()
@@ -62,6 +75,7 @@ class Package
     }
 
     /**
+     * Returns target package machine name
      * @return mixed
      */
     public function getAddresseeMachineName()
@@ -70,6 +84,7 @@ class Package
     }
 
     /**
+     * Returns alternative target package machine name if set. NULL otherwise.
      * @return mixed
      */
     public function getAddresseeAlternativeMachineName()
@@ -78,6 +93,7 @@ class Package
     }
 
     /**
+     * Returns sender's email
      * @return mixed
      */
     public function getSenderEmail()
@@ -86,6 +102,7 @@ class Package
     }
 
     /**
+     * Returns Inpost package type identifier ('A', 'B' or 'C')
      * @return mixed
      */
     public function getType()
@@ -94,6 +111,7 @@ class Package
     }
 
     /**
+     * Returns package's insurance amount, if any. NULL otherwise.
      * @return mixed
      */
     public function getInsuranceAmount()
@@ -102,6 +120,7 @@ class Package
     }
 
     /**
+     * Returns cash amount for the COD request associated with the package. NULL if the package is not COD.
      * @return mixed
      */
     public function getOnDeliveryAmount()
@@ -110,13 +129,11 @@ class Package
     }
 
     /**
+     * Returns additional custom string to be printed on the delivery slip, if any. NULL otherwise.
      * @return mixed
      */
     public function getCustomerRef()
     {
         return $this->customerRef;
     }
-
-
-
 }

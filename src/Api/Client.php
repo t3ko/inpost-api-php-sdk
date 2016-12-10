@@ -5,7 +5,6 @@ namespace T3ko\Inpost\Api;
 use Psr\Http\Message\StreamInterface;
 use T3ko\Inpost\Objects\MachineFactory;
 use T3ko\Inpost\Objects\Package;
-use T3ko\Inpost\Objects\PackageBuilder;
 
 class Client
 {
@@ -35,16 +34,15 @@ class Client
      *
      * @param $apiLogin Your API email/login
      * @param $apiPassword Your API password
-     * @param string $apiEndpoint API endpoint base URL to use. May be a production (https://api.paczkomaty.pl) or a
-     *                            sandbox one (https://sandbox-api.paczkomaty.pl). Defaults to production
-     * @param array $additionalClientConfig Array of additional configuration options for the underlying Guzzle client in the specified format
-     *                                      accepted by the Guzzle client (@see http://docs.guzzlephp.org/en/latest/request-options.html).
-     *                                      Please note that the constructor's $apiEndpoint parameter has precedence over
-     *                                      setting 'base_uri' within the configuration array
+     * @param string $apiEndpoint            API endpoint base URL to use. May be a production (https://api.paczkomaty.pl) or a
+     *                                       sandbox one (https://sandbox-api.paczkomaty.pl). Defaults to production
+     * @param array  $additionalClientConfig Array of additional configuration options for the underlying Guzzle client in the specified format
+     *                                       accepted by the Guzzle client (@see http://docs.guzzlephp.org/en/latest/request-options.html).
+     *                                       Please note that the constructor's $apiEndpoint parameter has precedence over
+     *                                       setting 'base_uri' within the configuration array
      */
     public function __construct($apiLogin, $apiPassword, $apiEndpoint = self::PRODUCTION_API_ENDPOINT, $additionalClientConfig = [])
     {
-
         $additionalClientConfig['base_uri'] = $apiEndpoint;
 
         $this->apiLogin = $apiLogin;
@@ -147,7 +145,7 @@ class Client
      *      'packcode' => <package number>
      *      'calculatedcharge' => <package cost>
      * )
-     * </pre>
+     * </pre>.
      *
      * @param Package $package Package being registered
      *
@@ -249,10 +247,10 @@ class Client
      * Prints the delivery slip for the package.
      *
      * @param $packageNumber Package number for the delivery slip
-     * @param string $size  Printout size. Can be 'self::LABEL_SIZE_A4' for 3 vertical slips on an A4 sheet,
-     *                      or 'self::LABEL_SIZE_A6P' for a single A6 sized sheet
-     * @param string $fileFormat  Format of the file returned. Can be 'self::LABEL_FILE_FORMAT_PDF' for PDF,
-     *                              or 'self::LABEL_FILE_FORMAT_EPL2' for Epl2.
+     * @param string $size       Printout size. Can be 'self::LABEL_SIZE_A4' for 3 vertical slips on an A4 sheet,
+     *                           or 'self::LABEL_SIZE_A6P' for a single A6 sized sheet
+     * @param string $fileFormat Format of the file returned. Can be 'self::LABEL_FILE_FORMAT_PDF' for PDF,
+     *                           or 'self::LABEL_FILE_FORMAT_EPL2' for Epl2
      *
      * @throws \Exception If the API returned a business logic error
      *

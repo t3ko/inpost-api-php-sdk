@@ -30,6 +30,7 @@ class Serializer
         } catch (ParseException $e) {
             return false;
         }
+
         return false;
     }
 

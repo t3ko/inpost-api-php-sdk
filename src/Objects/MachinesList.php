@@ -11,7 +11,7 @@ class MachinesList
         $this->machines = $machines;
     }
 
-    function toArray()
+    public function toArray()
     {
         return $this->machines;
     }

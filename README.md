@@ -49,8 +49,7 @@ $machinesList = $api->getMachinesList();
 ## Dokumentacja
 Dokumentacja funkcjonalna API Inpost dostępna poniżej:
 
-https://b2b.inpost.pl/pl/strefa-kilenta/informacje-dla-klientow/dokumentacja-api-paczkomatow-inpost
-
+https://b2b.paczkomaty.pl/pl/strefa-kilenta/informacje-dla-klientow/dokumentacja-api-paczkomatow-inpost
 ## Licencja
 
 MIT License

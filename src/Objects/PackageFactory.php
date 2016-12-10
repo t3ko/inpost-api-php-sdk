@@ -5,10 +5,13 @@ namespace T3ko\Inpost\Objects;
 class PackageFactory
 {
     /**
+     * @param string $senderEmail          Sender's email address
+     * @param string $packageType          Inpost package type ('A', 'B' or 'C')
+     * @param string $addresseeEmail       Addressee's email address
+     * @param string $addresseePhoneNumber Addressee's phone number
+     * @param string $addresseeMachineName Target package machine name
+     *
      * @return PackageBuilder
-     * @param $addresseeEmail
-     * @param $addresseePhoneNumber
-     * @param $senderEmail
      */
     public function getPackageBuilder($senderEmail, $packageType, $addresseeEmail, $addresseePhoneNumber, $addresseeMachineName)
     {
@@ -17,11 +20,11 @@ class PackageFactory
 
     /**
      * @param PackageBuilder $builder
+     *
      * @return Package
      */
     public function createPackage(PackageBuilder $builder)
     {
         return new Package($builder);
     }
-
 }
