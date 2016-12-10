@@ -37,15 +37,19 @@ class Client
      * @param $apiPassword Your API password
      * @param string $apiEndpoint API endpoint base URL to use. May be a production (https://api.paczkomaty.pl) or a
      *                            sandbox one (https://sandbox-api.paczkomaty.pl). Defaults to production
+     * @param array $additionalClientConfig Array of additional configuration options for the underlying Guzzle client in the specified format
+     *                                      accepted by the Guzzle client (@see http://docs.guzzlephp.org/en/latest/request-options.html).
+     *                                      Please note that the constructor's $apiEndpoint parameter has precedence over
+     *                                      setting 'base_uri' within the configuration array
      */
-    public function __construct($apiLogin, $apiPassword, $apiEndpoint = self::PRODUCTION_API_ENDPOINT)
+    public function __construct($apiLogin, $apiPassword, $apiEndpoint = self::PRODUCTION_API_ENDPOINT, $additionalClientConfig = [])
     {
+
+        $additionalClientConfig['base_uri'] = $apiEndpoint;
+
         $this->apiLogin = $apiLogin;
         $this->apiPassword = $apiPassword;
-        $this->apiClient = new \GuzzleHttp\Client([
-            'base_uri' => $apiEndpoint,
-        ]);
-
+        $this->apiClient = new \GuzzleHttp\Client($additionalClientConfig);
         $this->machineFactory = new MachineFactory();
         $this->serializer = new Serializer();
     }
