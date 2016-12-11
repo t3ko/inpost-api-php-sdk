@@ -1,29 +1,17 @@
 <?php
 
-namespace T3ko\Inpost\Objects;
+namespace T3ko\Inpost\Objects\Shipment;
 
-class Package
+/**
+ * Class Package.
+ *
+ * Represents a 'Paczkomaty' parcel sent to a machine or a POP, picked up by a courier.
+ */
+class Package extends Shipment
 {
-    /**
-     *  Inpost package type 'A'
-     */
-    const TYPE_A = 'A';
-    /**
-     *  Inpost package type 'B'
-     */
-    const TYPE_B = 'B';
-    /**
-     *  Inpost package type 'C'
-     */
-    const TYPE_C = 'C';
-
-    private $selfId;
-    private $addresseeEmail;
-    private $addresseePhoneNumber;
     private $addresseeMachineName;
     private $addresseeAlternativeMachineName;
-    private $senderEmail;
-    private $type;
+    private $size;
     private $insuranceAmount;
     private $onDeliveryAmount;
     private $customerRef;
@@ -31,51 +19,22 @@ class Package
     /**
      * Package constructor.
      *
-     * @param PackageBuilder
+     * @param PackageBuilder $builder
      */
     public function __construct(PackageBuilder $builder)
     {
-        $this->selfId = $builder->getSelfId();
-        $this->addresseeEmail = $builder->getAddresseeEmail();
-        $this->addresseePhoneNumber = $builder->getAddresseePhoneNumber();
+        parent::__construct($builder);
         $this->addresseeMachineName = $builder->getAddresseeMachineName();
         $this->addresseeAlternativeMachineName = $builder->getAddresseeAlternativeMachineName();
-        $this->senderEmail = $builder->getSenderEmail();
-        $this->type = $builder->getType();
+        $this->size = $builder->getSize();
         $this->insuranceAmount = $builder->getInsuranceAmount();
         $this->onDeliveryAmount = $builder->getOnDeliveryAmount();
         $this->customerRef = $builder->getCustomerRef();
     }
 
     /**
-     * Returns custom internal package ID
-     * @return mixed
-     */
-    public function getSelfId()
-    {
-        return $this->selfId;
-    }
-
-    /**
-     * Returns addressee's email address
-     * @return mixed
-     */
-    public function getAddresseeEmail()
-    {
-        return $this->addresseeEmail;
-    }
-
-    /**
-     * Returns addressee's phone number
-     * @return mixed
-     */
-    public function getAddresseePhoneNumber()
-    {
-        return $this->addresseePhoneNumber;
-    }
-
-    /**
-     * Returns target package machine name
+     * Returns target package machine name.
+     *
      * @return mixed
      */
     public function getAddresseeMachineName()
@@ -85,6 +44,7 @@ class Package
 
     /**
      * Returns alternative target package machine name if set. NULL otherwise.
+     *
      * @return mixed
      */
     public function getAddresseeAlternativeMachineName()
@@ -93,25 +53,8 @@ class Package
     }
 
     /**
-     * Returns sender's email
-     * @return mixed
-     */
-    public function getSenderEmail()
-    {
-        return $this->senderEmail;
-    }
-
-    /**
-     * Returns Inpost package type identifier ('A', 'B' or 'C')
-     * @return mixed
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
      * Returns package's insurance amount, if any. NULL otherwise.
+     *
      * @return mixed
      */
     public function getInsuranceAmount()
@@ -121,6 +64,7 @@ class Package
 
     /**
      * Returns cash amount for the COD request associated with the package. NULL if the package is not COD.
+     *
      * @return mixed
      */
     public function getOnDeliveryAmount()
@@ -130,10 +74,22 @@ class Package
 
     /**
      * Returns additional custom string to be printed on the delivery slip, if any. NULL otherwise.
+     *
      * @return mixed
      */
     public function getCustomerRef()
     {
         return $this->customerRef;
     }
+
+    /**
+     * Returns package size identifier.
+     *
+     * @return mixed
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
 }

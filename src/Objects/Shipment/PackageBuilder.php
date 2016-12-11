@@ -1,16 +1,12 @@
 <?php
 
-namespace T3ko\Inpost\Objects;
+namespace T3ko\Inpost\Objects\Shipment;
 
-class PackageBuilder
+class PackageBuilder extends ShipmentBuilder
 {
-    private $selfId;
-    private $addresseeEmail;
-    private $addresseePhoneNumber;
     private $addresseeMachineName;
     private $addresseeAlternativeMachineName;
-    private $senderEmail;
-    private $type;
+    private $size;
     private $insuranceAmount;
     private $onDeliveryAmount;
     private $customerRef;
@@ -19,78 +15,28 @@ class PackageBuilder
      * PackageBuilder constructor.
      *
      * @param string $senderEmail          Sender's email address
-     * @param string $packageType          Inpost package type ('A', 'B' or 'C')
+     * @param string $size                 Inpost package size identifier ('A', 'B' or 'C')
      * @param string $addresseeEmail       Addressee's email address
      * @param string $addresseePhoneNumber Addressee's phone number
      * @param string $addresseeMachineName Target package machine name
+     *
+     * @see Size
      */
-    public function __construct($senderEmail, $packageType, $addresseeEmail, $addresseePhoneNumber, $addresseeMachineName)
+    public function __construct($senderEmail, $size, $addresseeEmail, $addresseePhoneNumber, $addresseeMachineName)
     {
-        $this->senderEmail = $senderEmail;
-        $this->type = $packageType;
-        $this->addresseeEmail = $addresseeEmail;
-        $this->addresseePhoneNumber = $addresseePhoneNumber;
+        parent::__construct($senderEmail, $addresseeEmail, $addresseePhoneNumber);
+        $this->size = $size;
         $this->addresseeMachineName = $addresseeMachineName;
     }
 
     /**
-     * @return mixed
-     */
-    public function getSelfId()
-    {
-        return $this->selfId;
-    }
-
-    /**
-     * @param mixed $selfId
+     * Builds a Package instance.
      *
-     * @return PackageBuilder
+     * @return Package
      */
-    public function setSelfId($selfId)
+    public function build()
     {
-        $this->selfId = $selfId;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAddresseeEmail()
-    {
-        return $this->addresseeEmail;
-    }
-
-    /**
-     * @param mixed $addresseeEmail
-     *
-     * @return PackageBuilder
-     */
-    public function setAddresseeEmail($addresseeEmail)
-    {
-        $this->addresseeEmail = $addresseeEmail;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAddresseePhoneNumber()
-    {
-        return $this->addresseePhoneNumber;
-    }
-
-    /**
-     * @param mixed $addresseePhoneNumber
-     *
-     * @return PackageBuilder
-     */
-    public function setAddresseePhoneNumber($addresseePhoneNumber)
-    {
-        $this->addresseePhoneNumber = $addresseePhoneNumber;
-
-        return $this;
+        return new Package($this);
     }
 
     /**
@@ -136,39 +82,19 @@ class PackageBuilder
     /**
      * @return mixed
      */
-    public function getSenderEmail()
+    public function getSize()
     {
-        return $this->senderEmail;
+        return $this->size;
     }
 
     /**
-     * @param mixed $senderEmail
+     * @param mixed $size
      *
      * @return PackageBuilder
      */
-    public function setSenderEmail($senderEmail)
+    public function setSize($size)
     {
-        $this->senderEmail = $senderEmail;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param mixed $type
-     *
-     * @return PackageBuilder
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+        $this->size = $size;
 
         return $this;
     }

@@ -10,14 +10,14 @@ class Package implements XmlSerializable
 
     /**
      * Package constructor.
-     * @param \T3ko\Inpost\Objects\Package $package
+     * @param \T3ko\Inpost\Objects\Shipment\Package $package
      */
-    public function __construct(\T3ko\Inpost\Objects\Package $package)
+    public function __construct(\T3ko\Inpost\Objects\Shipment\Package $package)
     {
         $this->package = $package;
     }
 
-    function xmlSerialize(\Sabre\Xml\Writer $writer)
+    public function xmlSerialize(\Sabre\Xml\Writer $writer)
     {
         return $writer->write([
             'id' => $this->package->getSelfId(),
@@ -26,11 +26,10 @@ class Package implements XmlSerializable
             'phoneNum' => $this->package->getAddresseePhoneNumber(),
             'boxMachineName' => $this->package->getAddresseeMachineName(),
             'alternativeBoxMachineName' => $this->package->getAddresseeAlternativeMachineName(),
-            'packType' => $this->package->getType(),
+            'packType' => $this->package->getSize(),
             'insuranceAmount' => $this->package->getInsuranceAmount(),
             'onDeliveryAmount' => $this->package->getOnDeliveryAmount(),
             'customerRef' => $this->package->getCustomerRef(),
-
         ]);
     }
 

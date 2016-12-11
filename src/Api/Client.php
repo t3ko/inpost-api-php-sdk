@@ -4,7 +4,9 @@ namespace T3ko\Inpost\Api;
 
 use Psr\Http\Message\StreamInterface;
 use T3ko\Inpost\Objects\MachineFactory;
-use T3ko\Inpost\Objects\Package;
+use T3ko\Inpost\Objects\Shipment\Package;
+use T3ko\Inpost\Objects\Shipment\SelfSentPackage;
+use T3ko\Inpost\Objects\Shipment\Shipment;
 
 class Client
 {
@@ -32,8 +34,8 @@ class Client
     /**
      * Constructs the API client wrapper object.
      *
-     * @param $apiLogin Your API email/login
-     * @param $apiPassword Your API password
+     * @param string $apiLogin               Your API email/login
+     * @param string $apiPassword            Your API password
      * @param string $apiEndpoint            API endpoint base URL to use. May be a production (https://api.paczkomaty.pl) or a
      *                                       sandbox one (https://sandbox-api.paczkomaty.pl). Defaults to production
      * @param array  $additionalClientConfig Array of additional configuration options for the underlying Guzzle client in the specified format
@@ -53,10 +55,10 @@ class Client
     }
 
     /**
-     * Validates the API callresponse contents by searching for a '<paczkomaty><error>...</error></paczkomaty>'
+     * Validates the API call response contents by searching for a '<paczkomaty><error>...</error></paczkomaty>'
      * pattern in the passed string. If found - throws an exception based on the error description, returns TRUE otherwise.
      *
-     * @param $xml The response contents
+     * @param string $xml The response contents
      *
      * @return bool TRUE if the error was not found
      *
@@ -75,9 +77,9 @@ class Client
      * Performs a call on a given API endpoint using $method method.
      * Encodes array passed in the $body parameter (if any) as form fields for the POST method.
      *
-     * @param $path Path to the called API endpoint
-     * @param $method Http method to use
-     * @param array $body Array to be encoded as form fields in the request body
+     * @param string $path   Path to the called API endpoint
+     * @param string $method Http method to use
+     * @param array  $body   Array to be encoded as form fields in the request body
      *
      * @return StreamInterface Stream for the call response body (if any)
      */
@@ -102,7 +104,7 @@ class Client
     }
 
     /**
-     * Gets the list of all machines and/or "points-of-pickup"
+     * Gets the list of all machines and/or "points-of-pickup" (POP)
      * The list can be narrowed by passing TRUE as $paymentsEnabledOnly for the list of machines and/or "points-of-pickup"
      * that support payments on the spot for the "cash on delivery" option.
      * Passing TRUE as $machinesOnly will cause the list to be narrowed to show only package machines, excluding
@@ -138,33 +140,41 @@ class Client
     }
 
     /**
-     * Register the package, without committing the payment for it.
-     * If succedded, returns an array consisting of registered package's number and it's cost:
-     * <pre>
-     * Array (
-     *      'packcode' => <package number>
-     *      'calculatedcharge' => <package cost>
-     * )
-     * </pre>.
+     * Registers multiple shipments, without committing the payment for them.
+     * Returns associative array of Shipment objects with shipment number and status filled,
+     * with shipment's selfId as the array key.
      *
-     * @param Package $package Package being registered
+     * @param Shipment[] $shipments
      *
      * @throws \Exception If the API returned a bussiness logic error
      *
-     * @return int|bool Package number if successful, FALSE otherwise
+     * @return Shipment[]
      */
-    public function registerPackage(Package $package)
+    public function registerShipments(array $shipments)
     {
-        $response = $this->registerPackages([$package]);
-        if (is_array($response)) {
-            return array_shift($response);
-        }
+        //every shipment's type batch should be registered via a separate API call
+        $registeredPackages = $this->registerPackages(
+            array_filter($shipments, function ($v) {
+                return ($v instanceof Package) && !is_subclass_of($v, '\T3ko\Inpost\Objects\Shipment\Package');
+            }, ARRAY_FILTER_USE_BOTH),
+            true, false);
 
-        return $response;
+        $registeredSelfSentPackages = $this->registerPackages(
+            array_filter($shipments, function ($v) {
+                return $v instanceof SelfSentPackage;
+            }, ARRAY_FILTER_USE_BOTH),
+            true, true);
+
+        $registeredShipments = array_merge(
+            $registeredPackages,
+            $registeredSelfSentPackages
+        );
+
+        return $registeredShipments;
     }
 
     /**
-     * Registers multiple packages, without committing the payment for them.
+     * Calls the 'createDevliveryPacks' endpoint for creating/registering packages.
      * Returns an array of packs' numbers and costs following the format below:
      * <pre>
      * Array (
@@ -186,19 +196,27 @@ class Client
      * Every Package object passed to this method should have a unique id (<package id>) set (PackageBuilder::setSelfId())
      * in order for it's package number and cost to be distinguishable on the list after the registering process.
      *
-     * @param array $packages Array of Package objects to register
+     * @param Package[] $packages     Array of Package objects to register
+     * @param bool      $registerOnly TRUE if the packages should be registered only without committing to pay,
+     *                                FALSE if the packages should be fully created and ready to send
+     * @param bool      $selfSend     TRUE if the packages should be registered as a self-sent packages,
+     *                                FALSE if the packages should be registered as a courier-pickup packages
      *
-     * @throws \Exception If the API returned a bussiness logic error
+     * @throws \Exception If the API returned a business logic error
      *
-     * @return array|bool List of all registered package numbers assigned to package id's
+     * @return array|bool List of all registered package numbers assigned to package id's or FALSE if there was an error
      */
-    public function registerPackages(array $packages)
+    private function registerPackages(array $packages, $registerOnly = true, $selfSend = false)
     {
+        if (!is_array($packages) || empty($packages)) {
+            return false;
+        }
+
         $path = '?'.http_build_query([
                 'do' => 'createdeliverypacks',
             ]);
 
-        $requestBody = $this->serializer->serializeCreateDeliveryPacksRequest(false, false, $packages);
+        $requestBody = $this->serializer->serializeCreateDeliveryPacksRequest(!$registerOnly, $selfSend, $packages);
 
         $body = [
             'email' => $this->apiLogin,
@@ -217,13 +235,13 @@ class Client
     /**
      * Commits the payment for the package. Deducts the package cost form the account balance.
      *
-     * @param $packageNumber Register package number for which the payment should be processed
+     * @param string $packageNumber Register package number for which the payment should be processed
      *
      * @throws \Exception If the API returned a business logic error
      *
-     * @return bool TRUE if payment process succedded
+     * @return bool TRUE if payment process succeeded
      */
-    public function payForPack($packageNumber)
+    public function confirmShipment($packageNumber)
     {
         $path = '?'.http_build_query([
                 'do' => 'payforpack',
@@ -246,7 +264,7 @@ class Client
     /**
      * Prints the delivery slip for the package.
      *
-     * @param $packageNumber Package number for the delivery slip
+     * @param string $packageNumber Package number for the delivery slip
      * @param string $size       Printout size. Can be 'self::LABEL_SIZE_A4' for 3 vertical slips on an A4 sheet,
      *                           or 'self::LABEL_SIZE_A6P' for a single A6 sized sheet
      * @param string $fileFormat Format of the file returned. Can be 'self::LABEL_FILE_FORMAT_PDF' for PDF,
@@ -266,8 +284,8 @@ class Client
             'email' => $this->apiLogin,
             'password' => $this->apiPassword,
             'packcode' => $packageNumber,
-            'labelType' => $size ? $size : self::LABEL_SIZE_A4,
-            'labelFormat' => $fileFormat ? $fileFormat : self::LABEL_FILE_FORMAT_PDF,
+            'labelType' => $size ?: self::LABEL_SIZE_A4,
+            'labelFormat' => $fileFormat ?: self::LABEL_FILE_FORMAT_PDF,
         ];
 
         $response = $this->postOnEndpoint($path, $body)->getContents();
