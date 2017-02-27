@@ -209,7 +209,7 @@ class Client
     private function registerPackages(array $packages, $registerOnly = true, $selfSend = false)
     {
         if (!is_array($packages) || empty($packages)) {
-            return false;
+            return [];
         }
 
         $path = '?'.http_build_query([
