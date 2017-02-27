@@ -165,11 +165,19 @@ class Client
             }, ARRAY_FILTER_USE_BOTH),
             true, true);
 
-        $registeredShipments = array_merge(
-            $registeredPackages,
-            $registeredSelfSentPackages
-        );
-
+        if (is_array($registeredPackages) && (is_array($registeredSelfSentPackages)) {
+            $registeredShipments = array_merge(
+                $registeredPackages,
+                $registeredSelfSentPackages
+            );
+        }  elseif (is_array($registeredPackages)) {
+            $registeredShipments = $registeredPackages;
+        }  elseif {is_array($registeredSelfSentPackages)) {
+            $registeredShipments = $registeredSelfSentPackages;
+        }  else {
+            $registeredShipments = [];
+        }    
+                   
         return $registeredShipments;
     }
 
@@ -209,7 +217,7 @@ class Client
     private function registerPackages(array $packages, $registerOnly = true, $selfSend = false)
     {
         if (!is_array($packages) || empty($packages)) {
-            return [];
+            return false;
         }
 
         $path = '?'.http_build_query([
