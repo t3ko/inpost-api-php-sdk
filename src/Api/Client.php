@@ -301,4 +301,21 @@ class Client
             return $response;
         }
     }
+            
+    /**
+     * Get single machine by name (code name)
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getMachineByName($name)
+    {
+        $path = '?'.http_build_query([
+                'do' => 'findmachinebyname',
+                'name' => $name
+            ]);
+        $responseXml = $this->getFromEndpoint($path);
+        return count($this->machineFactory->createMachinesList($responseXml)) ? $this->machineFactory->createMachinesList($responseXml)[0] : null;
+    }            
+            
 }
