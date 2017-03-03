@@ -166,8 +166,8 @@ class Client
             true, true);
 
         $registeredShipments = array_merge(
-            $registeredPackages,
-            $registeredSelfSentPackages
+            $registeredPackages ?: [],
+            $registeredSelfSentPackages ?: []
         );
 
         return $registeredShipments;
