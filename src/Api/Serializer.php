@@ -65,8 +65,12 @@ class Serializer
         $response = $this->xmlService->parse($xml);
         $this->xmlService->elementMap = [];
         $packageCodes = [];
+
         if (!empty($response)) {
             foreach ($response as $pack) {
+                if (isset($pack['error'])) {
+                    throw new \Exception($pack['error']);
+                }
                 $packageCodes[$pack['id']] = [
                     'packcode' => $pack['packcode'],
                     'calculatedcharge' => $pack['calculatedcharge'],

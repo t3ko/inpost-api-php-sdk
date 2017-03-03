@@ -225,11 +225,7 @@ class Client
         ];
 
         $responseXml = $this->postOnEndpoint($path, $body)->getContents();
-        if ($this->validateResponse($responseXml)) {
-            return $this->serializer->deserializeCreateDeliveryPacksResponse($responseXml);
-        }
-
-        return false;
+        return $this->serializer->deserializeCreateDeliveryPacksResponse($responseXml);
     }
 
     /**
