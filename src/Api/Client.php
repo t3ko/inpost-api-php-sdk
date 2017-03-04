@@ -3,6 +3,7 @@
 namespace T3ko\Inpost\Api;
 
 use Psr\Http\Message\StreamInterface;
+use T3ko\Inpost\Objects\Machine;
 use T3ko\Inpost\Objects\MachineFactory;
 use T3ko\Inpost\Objects\Shipment\Package;
 use T3ko\Inpost\Objects\Shipment\SelfSentPackage;
@@ -127,6 +128,15 @@ class Client
         return $this->machineFactory->createMachinesList($responseXml);
     }
 
+    /**
+     * Gets the list of nearest machines taking into accout the $postCode.
+     *
+     * @param string $postCode            Postcode "XX-XXX" to find machines around
+     * @param int    $limit               Limit to the returned list (by default: 3 nearest machines)
+     * @param bool   $paymentsEnabledOnly Should the list contain only payment enabled spots
+     *
+     * @return array
+     */
     public function getNearestMachines($postCode, $limit = 3, $paymentsEnabledOnly = false)
     {
         $path = '?' . http_build_query([
@@ -137,6 +147,25 @@ class Client
         $responseXml = $this->getFromEndpoint($path);
 
         return $this->machineFactory->createMachinesList($responseXml);
+    }
+
+    /**
+     * Return a Machine object with the details of the machine with name $name or NULL if such machine doesnt exist.
+     *
+     * @param string $name Machine name
+     *
+     * @return Machine|null
+     */
+    public function getMachineByName($name)
+    {
+        $path = '?' . http_build_query([
+                'do' => 'findmachinebyname',
+                'name' => $name,
+            ]);
+        $responseXml = $this->getFromEndpoint($path);
+        $machines = $this->machineFactory->createMachinesList($responseXml);
+
+        return array_shift($machines);
     }
 
     /**
@@ -199,6 +228,7 @@ class Client
      *          'calculatedcharge' => <package cost>
      *       )
      *</pre>
+     *
      * @param Shipment $shipment
      *
      * @throws \Exception If the API returned a bussiness logic error
@@ -208,6 +238,7 @@ class Client
     public function registerShipment(Shipment $shipment)
     {
         $registeredShipments = $this->registerShipments([$shipment]);
+
         return array_shift($registeredShipments);
     }
 
