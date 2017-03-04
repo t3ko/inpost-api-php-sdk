@@ -60,9 +60,9 @@ class Client
      *
      * @param string $xml The response contents
      *
-     * @return bool TRUE if the error was not found
-     *
      * @throws \Exception
+     *
+     * @return bool TRUE if the error was not found
      */
     private function validateResponse($xml)
     {
@@ -119,7 +119,7 @@ class Client
      */
     public function getMachinesList($paymentsEnabledOnly = false, $machinesOnly = false)
     {
-        $path = '?'.http_build_query([
+        $path = '?' . http_build_query([
                 'do' => 'listmachines_xml',
             ]);
         $responseXml = $this->getFromEndpoint($path);
@@ -129,7 +129,7 @@ class Client
 
     public function getNearestMachines($postCode, $limit = 3, $paymentsEnabledOnly = false)
     {
-        $path = '?'.http_build_query([
+        $path = '?' . http_build_query([
                 'do' => 'findnearestmachines',
                 'postcode' => $postCode,
                 'limit' => $limit,
@@ -141,8 +141,25 @@ class Client
 
     /**
      * Registers multiple shipments, without committing the payment for them.
-     * Returns associative array of Shipment objects with shipment number and status filled,
-     * with shipment's selfId as the array key.
+     * Returns an array of packs' numbers and costs following the format below:
+     * <pre>
+     * Array (
+     *      '<package id #1>' => Array (
+     *          'packcode' => <package number>
+     *          'calculatedcharge' => <package cost>
+     *       ),
+     *      '<package id #2>' => Array (
+     *          'packcode' => <package number>
+     *          'calculatedcharge' => <package cost>
+     *       ),
+     *      '<package id #3>' => Array (
+     *          'packcode' => <package number>
+     *          'calculatedcharge' => <package cost>
+     *       ),
+     *      ...
+     * )
+     * </pre>
+     * With <package id> being an unique id set via ShipmentBuilder::setSelfId()
      *
      * @param Shipment[] $shipments
      *
@@ -174,7 +191,28 @@ class Client
     }
 
     /**
-     * Calls the 'createDevliveryPacks' endpoint for creating/registering packages.
+     * Registers shipment, without committing the payment for it.
+     * Returns an associative array, containing of the Inpost assigned package number and calculated package cost
+     * <pre>
+     *       Array (
+     *          'packcode' => <package number>
+     *          'calculatedcharge' => <package cost>
+     *       )
+     *</pre>
+     * @param Shipment $shipment
+     *
+     * @throws \Exception If the API returned a bussiness logic error
+     *
+     * @return Shipment
+     */
+    public function registerShipment(Shipment $shipment)
+    {
+        $registeredShipments = $this->registerShipments([$shipment]);
+        return array_shift($registeredShipments);
+    }
+
+    /**
+     * Calls the 'createDeliveryPacks' endpoint for creating/registering packages.
      * Returns an array of packs' numbers and costs following the format below:
      * <pre>
      * Array (
@@ -212,7 +250,7 @@ class Client
             return false;
         }
 
-        $path = '?'.http_build_query([
+        $path = '?' . http_build_query([
                 'do' => 'createdeliverypacks',
             ]);
 
@@ -225,6 +263,7 @@ class Client
         ];
 
         $responseXml = $this->postOnEndpoint($path, $body)->getContents();
+
         return $this->serializer->deserializeCreateDeliveryPacksResponse($responseXml);
     }
 
@@ -239,7 +278,7 @@ class Client
      */
     public function confirmShipment($packageNumber)
     {
-        $path = '?'.http_build_query([
+        $path = '?' . http_build_query([
                 'do' => 'payforpack',
             ]);
 
@@ -261,10 +300,10 @@ class Client
      * Prints the delivery slip for the package.
      *
      * @param string $packageNumber Package number for the delivery slip
-     * @param string $size       Printout size. Can be 'self::LABEL_SIZE_A4' for 3 vertical slips on an A4 sheet,
-     *                           or 'self::LABEL_SIZE_A6P' for a single A6 sized sheet
-     * @param string $fileFormat Format of the file returned. Can be 'self::LABEL_FILE_FORMAT_PDF' for PDF,
-     *                           or 'self::LABEL_FILE_FORMAT_EPL2' for Epl2
+     * @param string $size          Printout size. Can be 'self::LABEL_SIZE_A4' for 3 vertical slips on an A4 sheet,
+     *                              or 'self::LABEL_SIZE_A6P' for a single A6 sized sheet
+     * @param string $fileFormat    Format of the file returned. Can be 'self::LABEL_FILE_FORMAT_PDF' for PDF,
+     *                              or 'self::LABEL_FILE_FORMAT_EPL2' for Epl2
      *
      * @throws \Exception If the API returned a business logic error
      *
@@ -272,7 +311,7 @@ class Client
      */
     public function getSticker($packageNumber, $size = self::LABEL_SIZE_A4, $fileFormat = self::LABEL_FILE_FORMAT_PDF)
     {
-        $path = '?'.http_build_query([
+        $path = '?' . http_build_query([
                 'do' => 'getsticker',
             ]);
 
