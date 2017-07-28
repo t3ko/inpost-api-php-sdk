@@ -13,19 +13,12 @@ Najprostszy sposób to instalacja za pomocą Composer-a (http://getcomposer.org)
 
 Poprzez plik `composer.json`:
 ```
-"repositories": {
-    "t3ko-inpost-api-php-sdk" : {
-        "type": "vcs",
-        "url": "https://github.com/t3ko/inpost-api-php-sdk.git"
-    }
-},
 "require": {
     "t3ko/inpost-api-php-sdk": "dev-master"
 },
 ```
 lub z linii poleceń:
 ```
-composer config repositories.t3ko-inpost-api-php-sdk vcs https://github.com/t3ko/inpost-api-php-sdk.git
 composer require t3ko/inpost-api-php-sdk
 ```
 
@@ -44,6 +37,37 @@ $api = new T3ko\Inpost\Api\Client(
 
 $machinesList = $api->getMachinesList();
 
+```
+Utworzenie, rejestracja i potwierdzenie(opłacenie) nowej paczki:
+```
+$package = (new \T3ko\Inpost\Objects\Shipment\PackageBuilder(
+        'test@testowy.pl',
+        \T3ko\Inpost\Objects\Shipment\Size::A,
+        'odbiorca@exmple.org',
+        '501500500',
+        'BBI005'))->build();
+        
+$registerResponse = $api->registerShipment($package);
+
+var_dump($registerResponse);
+/*
+array(2) {
+  ["packcode"]=>
+  string(24) "622222209743346017700007"
+  ["calculatedcharge"]=>
+  string(4) "1.00"
+}
+*/
+
+$api->confirmShipment($registerResponse['packcode']);
+```
+
+Pobranie PDF z etykietą opłaconej paczki:
+```
+$fileContents = $api->getSticker('622222209743346017700007', \T3ko\Inpost\Api\Client::LABEL_SIZE_A6);
+
+$fp = fopen('622222209743346017700007.pdf', 'wb+');
+fwrite($fp, $fileContents);
 ```
 
 ## Dokumentacja
